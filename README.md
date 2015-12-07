@@ -1,13 +1,20 @@
-# gulp-s3 [![NPM version][npm-image]][npm-url]
+# gulp-s3-publish [![NPM version][npm-image]][npm-url]
 
 > s3 plugin for [gulp](https://github.com/wearefractal/gulp)
 
+## Info
+This plugin is based on [gulp-s3](https://github.com/nkostelnik/gulp-s3), which is no longer maintained.
+
+I've refactored the original `gulp-s3` plugin - replacing `event-stream` with `through2` which produces Streams2/3 compatible streams. This plugin will also error on upload failure, which can be useful in CI/CD environments. 
+
+Please open an issue for feature requests.
+
 ## Usage
 
-First, install `gulp-s3` as a development dependency:
+First, install `gulp-s3-publish` as a development dependency:
 
 ```shell
-npm install --save-dev gulp-s3
+npm install --save-dev gulp-s3-publish
 ```
 
 Setup your aws.json file
@@ -22,10 +29,10 @@ Setup your aws.json file
 
 Then, use it in your `gulpfile.js`:
 ```javascript
-var s3 = require("gulp-s3");
+var s3 = require("gulp-s3-publish");
 
 aws = JSON.parse(fs.readFileSync('./aws.json'));
-gulp.src('./dist/**')
+gulp.src('./dist/**/*')
     .pipe(s3(aws));
 ```
 
