@@ -5,13 +5,21 @@ var knox = require('knox');
 var gutil = require('gulp-util');
 var through2Concurrent = require('through2-concurrent');
 var mime = require('mime');
+var assign = require('lodash.assign');
 
 // Defaults
 mime.default_type = 'text/plain';
 
-module.exports = function (aws, options) {
+module.exports = function (aws, opts) {
     
-    options = options || {};
+    var defaults = {
+        delay: 0,
+        concurrency: 1
+    };
+
+    var options = assign({}, defaults, opts);
+
+
 
     if (!options.delay) { options.delay = 0; }
     if (!options.parallel) { options.parallel = 1; }
@@ -22,7 +30,7 @@ module.exports = function (aws, options) {
     var regexGeneral = /\.([a-z]{2,})$/i;
 
 
-    return through2Concurrent.obj({maxConcurrency: options.parallel}, function (file, enc, cb) {
+    return through2Concurrent.obj({maxConcurrency: options.concurrency}, function (file, enc, cb) {
 
         if (file.isNull()) {
             return cb(null, file)
