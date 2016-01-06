@@ -3,7 +3,7 @@
 // Deps
 var knox = require('knox');
 var gutil = require('gulp-util');
-var through = require('through2');
+var through2Concurrent = require('through2-concurrent');
 var mime = require('mime');
 
 // Defaults
@@ -14,6 +14,7 @@ module.exports = function (aws, options) {
     options = options || {};
 
     if (!options.delay) { options.delay = 0; }
+    if (!options.parallel) { options.parallel = 1; }
 
     var client = knox.createClient(aws);
     var waitTime = 0;
@@ -21,7 +22,7 @@ module.exports = function (aws, options) {
     var regexGeneral = /\.([a-z]{2,})$/i;
 
 
-    return through.obj(function (file, enc, cb) {
+    return through2Concurrent.obj({maxConcurrency: options.parallel}, function (file, enc, cb) {
 
         if (file.isNull()) {
             return cb(null, file)
