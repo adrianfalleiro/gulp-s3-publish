@@ -26,8 +26,8 @@ module.exports = function (aws, opts) {
 
     var client = knox.createClient(aws);
     var waitTime = 0;
-    var regexGzip = /\.([a-z]{2,})\.gz$/i;
-    var regexGeneral = /\.([a-z]{2,})$/i;
+    var regexGzip = /\.([a-z0-9]{2,})\.gz$/i;
+    var regexGeneral = /\.([a-z0-9]{2,})$/i;
 
 
     return through2Concurrent.obj({maxConcurrency: options.concurrency}, function (file, enc, cb) {
