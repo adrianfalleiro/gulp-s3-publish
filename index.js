@@ -70,7 +70,7 @@ module.exports = function (aws, opts) {
             // Prepare upload callback
             var uploadCallback = function(err, res){
                 if (err) {
-                    cb(new gutil.PluginError(PLUGIN_NAME, "[" + res.statusCode + "] " + file.path + " -> " + uploadPath));
+                    cb(new gutil.PluginError(PLUGIN_NAME, "[ERROR] " + file.path + " -> " + uploadPath));
 
                 } else {
                     gutil.log(gutil.colors.green("[SUCCESS]", file.path + " -> " + aws.bucket + "/" + uploadPath));

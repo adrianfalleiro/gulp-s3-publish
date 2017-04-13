@@ -3,7 +3,7 @@
   "version": "1.0.2",
   "description": "A plugin for Gulp that uploads files to s3",
   "keywords": [
-    "gulpplugin",
+    "gulp-plugin",
     "gulp",
     "s3"
   ],
