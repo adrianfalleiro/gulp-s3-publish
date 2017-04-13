@@ -65,8 +65,6 @@ module.exports = function (aws, opts) {
                 }
             }
 
-            uploadParams.ContentLength = file.stat.size;
-
             // Prepare upload callback
             var uploadCallback = function(err, res){
                 if (err) {
