@@ -3,9 +3,9 @@
 > s3 plugin for [gulp](https://github.com/wearefractal/gulp)
 
 ## Info
-This plugin is based on [gulp-s3](https://github.com/nkostelnik/gulp-s3), which is no longer maintained.
+This plugin is based on [gulp-s3](https://github.com/nkostelnik/gulp-s3), which was unmaintained when this repository was forked.
 
-I've refactored the original `gulp-s3` plugin - replacing `event-stream` with `through2` which produces Streams2/3 compatible streams. This plugin will also error on upload failure, which can be useful in CI/CD environments. 
+This plugin produces Streams2/3 compatible streams and will also error on upload failure, which can be useful in CI/CD environments.
 
 Please open an issue for feature requests.
 
@@ -47,7 +47,7 @@ Default: `[]`
 Headers to set to each file uploaded to S3
 
 ```javascript
-var options = { headers: {'Cache-Control': 'max-age=315360000, no-transform, public'} }
+var options = { headers: {'CacheControl': 'max-age=315360000, no-transform, public'} }
 gulp.src('./dist/**', {read: false})
     .pipe(s3(aws, options));
 ```
