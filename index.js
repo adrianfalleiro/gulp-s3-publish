@@ -1,15 +1,13 @@
-'use strict';
+"use strict";
 
-// Deps
+var gutil = require("gulp-util");
+var through2Concurrent = require("through2-concurrent");
+var mime = require("mime");
+var assign = require("lodash.assign");
+var AWS = require("aws-sdk");
 
-var gutil = require('gulp-util');
-var through2Concurrent = require('through2-concurrent');
-var mime = require('mime');
-var assign = require('lodash.assign');
-var AWS = require('aws-sdk');
-
-// Defaults
-mime.default_type = 'text/plain';
+mime.default_type = "text/plain";
+var PLUGIN_NAME = "gulp-s3-publish";
 
 module.exports = function (aws, opts) {
     
@@ -20,11 +18,8 @@ module.exports = function (aws, opts) {
 
     var options = assign({}, defaults, opts);
 
-    if (!options.delay) { options.delay = 0; }
-    if (!options.parallel) { options.parallel = 1; }
-
     var client = new AWS.S3({
-        apiVersion: '2006-03-01',
+        apiVersion: "2006-03-01",
         accessKeyId: aws.key,
         secretAccessKey: aws.secret,
         region: aws.region,
@@ -37,26 +32,25 @@ module.exports = function (aws, opts) {
     return through2Concurrent.obj({ maxConcurrency: options.concurrency }, function (file, enc, cb) {
 
         if (file.isNull()) {
-            return cb(null, file)
+            return cb(null, file);
         }
 
         if (file.isStream()) {
-            return cb(new gutil.PluginError('gulp-s3-publish', 'Streaming not supported'))
+            return cb(new gutil.PluginError(PLUGIN_NAME, "Streaming not supported"));
         }
 
         try {
-            var uploadPath = file.path.replace(file.base, options.uploadPath || '')
-               .replace(new RegExp('\\\\', 'g'), '/') 
+            var uploadPath = file.path.replace(file.base, options.uploadPath || "")
+               .replace(new RegExp("\\\\", "g"), "/"); 
 
             // Explicitly set headers
             // Else default to public access for all files
-            var headers = (options.headers)
-                ? options.headers
-                : { ACL : 'public-read' }
+            var uploadParams = assign({}, options.headers);
+            uploadParams.ACL = (options.acl) ? options.acl : "public-read";
 
             if (regexGzip.test(file.path)) {
                 // Set proper encoding for gzipped files, remove .gz suffix
-                headers['ContentEncoding'] = 'gzip';
+                uploadParams.ContentEncoding = 'gzip';
                 uploadPath = uploadPath.substring(0, uploadPath.length - 3);
             } else if (options.gzippedOnly) {
                 // Ignore non-gzipped files
@@ -64,36 +58,35 @@ module.exports = function (aws, opts) {
             }
 
             // Set content type based of file extension
-            if (!headers['ContentType'] && regexGeneral.test(uploadPath)) {
-                headers['ContentType'] = mime.lookup(uploadPath);
+            if (!uploadParams.ContentType && regexGeneral.test(uploadPath)) {
+                uploadParams.ContentType = mime.lookup(uploadPath);
                 if (options.encoding) {
-                    headers['ContentType'] += '; charset=' + options.encoding;
+                    uploadParams.ContentType += "; charset=" + options.encoding;
                 }
             }
 
-            headers['ContentLength'] = file.stat.size;
+            uploadParams.ContentLength = file.stat.size;
 
             // Prepare upload callback
             var uploadCallback = function(err, res){
                 if (err) {
-                    cb(new gutil.PluginError('gulp-s3-publish', "[" + res.statusCode + "] " + file.path + " -> " + uploadPath));
+                    cb(new gutil.PluginError(PLUGIN_NAME, "[" + res.statusCode + "] " + file.path + " -> " + uploadPath));
 
                 } else {
-                    gutil.log(gutil.colors.green('[SUCCESS]', file.path + " -> " + uploadPath));
+                    gutil.log(gutil.colors.green("[SUCCESS]", file.path + " -> " + aws.bucket + "/" + uploadPath));
                 }
 
                 cb(null, file);
-            }
+            };
 
             // Lets Upload
-
-            headers['Bucket'] = aws.bucket;
-            headers['Key'] = uploadPath;
-            headers['Body'] = file.contents;
-            client.putObject(headers, uploadCallback);
+            uploadParams.Bucket = aws.bucket;
+            uploadParams.Key = uploadPath;
+            uploadParams.Body = file.contents;
+            client.putObject(uploadParams, uploadCallback);
 
         } catch (err) {
-            this.emit('error', new gutil.PluginError('gulp-s3-publish', err.toString()));
+            this.emit("error", new gutil.PluginError(PLUGIN_NAME, err.toString()));
         }
     });
-}
+};
