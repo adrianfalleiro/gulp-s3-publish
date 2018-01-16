@@ -31,9 +31,11 @@ Then, use it in your `gulpfile.js`:
 ```javascript
 var s3 = require("gulp-s3-publish");
 
-aws = JSON.parse(fs.readFileSync('./aws.json'));
-gulp.src('./dist/**/*')
+gulp.task('deploy', function () {
+  var aws = JSON.parse(fs.readFileSync('./aws.json'));
+  return gulp.src('./dist/**/*')
     .pipe(s3(aws));
+});
 ```
 
 ## API
