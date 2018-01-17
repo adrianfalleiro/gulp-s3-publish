@@ -43,8 +43,8 @@ gulp.task('deploy', function () {
 
 #### options.headers
 
-Type: `Object`          
-Default: `{}`
+Type: `Object`  
+Default: `{}`  
 Options: `CacheControl` | `ContentDisposition` | `ContentEncoding` | `ContentLanguage`, `ContentLength` | `ContentMD5` | `ContentType` | `Expires`
 
 Headers to set to each file uploaded to S3. Note that ContentLenghth is automatically computed for you and ContentType is guessed using the `mime` package.
@@ -55,10 +55,10 @@ gulp.src('./dist/**', {read: false})
     .pipe(s3(aws, options));
 ```
 
-### options.acl
+#### options.acl
 
-Type: `String`
-Default: `public-read`
+Type: `String`  
+Default: `public-read`  
 Options: `private` | `public-read` | `public-read-write` | `authenticated-read` | `aws-exec-read` | `bucket-owner-read` | `bucket-owner-full-control`
 
 Set the access control for each object uploaded. Defaults to `public-read`.
@@ -71,7 +71,7 @@ gulp.src('./dist/**', {read: false})
 
 #### options.gzippedOnly
 
-Type: `Boolean`          
+Type: `Boolean`  
 Default: `false`
 
 Only upload files with .gz extension, additionally it will remove the .gz suffix on destination filename and set appropriate Content-Type and Content-Encoding headers.
@@ -88,7 +88,7 @@ gulp.src('./dist/**')
 
 #### options.concurrency
 
-Type: `Number`          
+Type: `Number`  
 Default: `1`
 
 Change the concurrency at which the upload occurs, useful for projects with many files. Defaults to 1.
