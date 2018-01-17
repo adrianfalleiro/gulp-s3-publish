@@ -1,12 +1,13 @@
-/*global describe, it*/
+/* eslint-disable */
+/* global describe, it */
 'use strict';
 
-var fs = require('fs'),
-should = require('should'),
-path = require('path');
+let fs = require('fs'),
+  should = require('should'),
+  path = require('path');
 require('mocha');
 
-var gutil = require('gulp-util'),
-s3 = require('../');
+let gutil = require('gulp-util'),
+  s3 = require('../');
 
-describe('gulp-s3', function () { });
+describe('gulp-s3', () => { });
