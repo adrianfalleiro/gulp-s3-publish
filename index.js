@@ -71,7 +71,7 @@ const plugin = (aws, opts) => {
           this.emit('error', new PluginError(PLUGIN_NAME, err.toString()));
           callback(new PluginError(PLUGIN_NAME, err.toString()));
         } else {
-          log(colors.green('[SUCCESS]', file.path + ' -> ' + aws.bucket + '/' + uploadPath));
+          log(colors.green('[SUCCESS] ' + file.path + ' -> ' + aws.bucket + '/' + uploadPath));
         }
 
         callback(null, file);
