@@ -41,7 +41,7 @@ const plugin = (aws, opts) => {
 
     try {
       let uploadPath = file.path.replace(file.base, options.uploadPath || '')
-        .replace(new RegExp('\\\\', 'g'), '/');
+        .replace(new RegExp('\\\\', 'g'), '/').replace(new RegExp('^/'),"");
 
       // Explicitly set headers
       // Else default to public access for all files
