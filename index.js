@@ -20,12 +20,12 @@ const plugin = (aws, opts) => {
   const options = assign({}, defaults, opts);
   options.maxConcurrency = options.concurrency;
 
-  const client = new AWS.S3({
+  const client = new AWS.S3(Object.assign({
     apiVersion: '2006-03-01',
     accessKeyId: aws.key,
     secretAccessKey: aws.secret,
     region: aws.region
-  });
+  }, aws.sessionToken ? {sessionToken: aws.sessionToken} : {}));
 
   const regexGzip = /\.([a-z0-9]{2,})\.gz$/i;
   const regexGeneral = /\.([a-z0-9]{2,})$/i;
