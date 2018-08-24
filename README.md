@@ -26,6 +26,7 @@ Setup your aws.json file
   "region": "eu-west-1"
 }
 ```
+NOTE: for SSO/MFA support, you need to handle adding/updating `"sessionToken": "<SESSION TOKEN>"` in file
 
 Then, use it in your `gulpfile.js`:
 ```javascript
