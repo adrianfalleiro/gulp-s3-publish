@@ -1,34 +1,32 @@
-import * as through from 'through2-concurrent';
+import * as through from 'through2';
 import { TransformFunction, FlushCallback } from 'through2';
 import * as PluginError from 'plugin-error';
+import { red } from 'ansi-colors';
+import * as log from 'fancy-log';
 import { S3 } from 'aws-sdk'
 import { chunk } from 'lodash';
 
 const PLUGIN_NAME = 'gulp-s3-publish/clean';
 
 export interface CleanOpts {
-  delay: number;
-  maxConcurrency: number;
   uploadPath: string;
-  whitelist: string[];
-  s3ListObjectParams: S3.ListObjectsRequest;
-  s3ClientOpts: S3.Types.ClientConfiguration;
+  whitelist?: CleanWhitelistEntry[];
+  dryRun?: boolean;
+  bucket: string;
+}
+
+export interface CleanWhitelistEntry {
+  type: 'key' | 'keyPrefix';
+  path: string;
 }
 
 const defaults: Partial<CleanOpts> = {
-  delay: 0,
-  maxConcurrency: 1,
-  s3ClientOpts: {},
-  whitelist: []
+  whitelist: [],
+  dryRun: false,
 };
 
-export function clean(userOptions: CleanOpts) {
+export function clean(client: S3, userOptions: CleanOpts) {
   const options: CleanOpts = Object.assign({}, defaults, userOptions);
-
-  const client = new S3({
-    apiVersion: '2006-03-01',
-    ...options.s3ClientOpts
-  });
 
   const files = [];
 
@@ -53,7 +51,10 @@ export function clean(userOptions: CleanOpts) {
 
     // Get all objects in S3
     let objects: S3.ObjectList = [];
-    const listParams = options.s3ListObjectParams;
+    const listParams: S3.ListObjectsRequest = { 
+      Bucket: options.bucket,
+      Prefix: options.uploadPath
+    };
     let response = await client.listObjects(listParams).promise();
     objects = objects.concat(response.Contents)
 
@@ -63,10 +64,23 @@ export function clean(userOptions: CleanOpts) {
       objects = objects.concat(response.Contents);
     }
 
+    const whitelistKeyPrefixes = options.whitelist.filter(w => w.type === 'keyPrefix'); 
+    const whitelistKeys = options.whitelist.filter(w => w.type === 'key'); 
+
     // Delete old files
     const objectsToDelete = objects
       .filter(object => !files.find(f => f === object.Key))
-      .filter(object => !options.whitelist.find(f => f === object.Key));
+      .filter(object => !whitelistKeys.find(w => `${options.uploadPath}/${w.path}` === object.Key))
+      .filter(object => !whitelistKeyPrefixes.find(w => object.Key.startsWith(`${options.uploadPath}/${w.path}`)));
+
+    if (options.dryRun) {
+      log('Files to be deleted: ');
+      for(const object of objectsToDelete) {
+        log(red(object.Key));
+      }
+      // Return early
+      return callback();
+    }
 
     for(const objects of chunk(objectsToDelete, 1000)) {
       const keys = objects.map(object => ({ Key: object.Key }));
@@ -74,7 +88,7 @@ export function clean(userOptions: CleanOpts) {
         Delete: {
           Objects: keys
         },
-        Bucket: listParams.Bucket,
+        Bucket: options.bucket,
       }
 
       try {
@@ -87,6 +101,6 @@ export function clean(userOptions: CleanOpts) {
     return callback();
   }
 
-  return through.obj(options, transform, flush);
+  return through.obj(transform, flush);
 }
 
