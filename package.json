@@ -9,7 +9,7 @@
   ],
   "homepage": "https://github.com/adrianfalleiro/gulp-s3-publish",
   "bugs": "https://github.com/adrianfalleiro/gulp-s3-publish/issues",
-  "main": "./src/index.js",
+  "main": "./dist/index.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/adrianfalleiro/gulp-s3-publish.git"
