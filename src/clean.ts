@@ -9,10 +9,10 @@ import { chunk } from 'lodash';
 const PLUGIN_NAME = 'gulp-s3-publish/clean';
 
 export interface CleanOpts {
-  uploadPath: string;
+  bucket: string;
+  uploadPath?: string;
   whitelist?: CleanWhitelistEntry[];
   dryRun?: boolean;
-  bucket: string;
 }
 
 export interface CleanWhitelistEntry {
@@ -21,6 +21,7 @@ export interface CleanWhitelistEntry {
 }
 
 const defaults: Partial<CleanOpts> = {
+  uploadPath: '',
   whitelist: [],
   dryRun: false,
 };

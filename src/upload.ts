@@ -10,8 +10,8 @@ const defaultMimeType = 'text/plain'; // eslint-disable-line
 const PLUGIN_NAME = 'gulp-s3-publish/upload';
 
 export interface UploadOpts {
-  uploadPath: string;
   bucket: string;
+  uploadPath?: string;
   delay?: number;
   maxConcurrency?: number;
   extraS3PutObjectParams?: Partial<S3.PutObjectRequest>;
@@ -19,6 +19,7 @@ export interface UploadOpts {
 }
 
 const defaults: Partial<UploadOpts> = {
+  uploadPath: '',
   extraS3PutObjectParams: {},
   dryRun: false,
 };
