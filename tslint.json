@@ -1,0 +1,9 @@
+{
+  "extends": ["tslint:latest", "tslint-config-prettier"],
+  "rules": {
+    "object-literal-sort-keys": false,
+    "no-implicit-dependencies": [true, "dev"],
+    "quotemark": [true, "double"],
+    "indent": [true, "spaces", 2]
+  }
+}
