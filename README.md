@@ -38,7 +38,7 @@ gulp.task('deploy', () => {
 });
 
 // Clean unused files in bucket
-gulp.task('deploy-clean', () => {
+gulp.task('clean', () => {
   return gulp.src('./dist/**/*')
     .pipe(clean(client, cleanOpts));
 });
