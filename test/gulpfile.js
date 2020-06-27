@@ -1,5 +1,5 @@
 const gulp = require('gulp');
-const { upload, clean } = require('../src');
+const { upload, clean } = require('../dist');
 
 gulp.task('upload', function() {
   return gulp.src('../src/*.ts')
