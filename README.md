@@ -11,92 +11,36 @@ Please open an issue for feature requests.
 
 ## Usage
 
-First, install `gulp-s3-publish` as a development dependency:
+First, install `gulp-s3-publish` and `aws-sdk` as a development dependency:
 
 ```shell
-npm install --save-dev gulp-s3-publish
+npm install --save-dev gulp-s3-publish aws-sdk
 ```
 
-Setup your aws.json file
+Then, use it in your `Gulpfile.js`:
 ```javascript
-{
-  "key": "AKIAI3Z7CUAFHG53DMJA",
-  "secret": "acYxWRu5RRa6CwzQuhdXEfTpbQA+1XQJ7Z1bGTCx",
-  "bucket": "dev.example.com",
-  "region": "eu-west-1"
-}
-```
+const { upload, clean } = require('gulp-s3-publish');
+const { S3 } = require('aws-sdk'); 
 
-Then, use it in your `gulpfile.js`:
-```javascript
-const { upload, clean } = require("gulp-s3-publish");
+const client = S3();
+const uploadOpts = {
+  bucket: 'my-s3-bucket';
+};
 
-gulp.task('deploy', function () {
-  const creds = JSON.parse(fs.readFileSync('./aws.json'));
+const cleanOpts = {
+  bucket: 'my-s3-bucket';
+};
+
+// Upload files to S3
+gulp.task('deploy', () => {
+  return gulp.src('./dist/**/*'
+    .pipe(upload(client, uploadOpts));
+});
+
+// Clean unused files in bucket
+gulp.task('deploy-clean', () => {
   return gulp.src('./dist/**/*')
-    .pipe(upload(aws));
-});
-```
-
-## API
-
-
-#### options.headers
-
-Type: `Object`  
-Default: `{}`  
-Options: `CacheControl` | `ContentDisposition` | `ContentEncoding` | `ContentLanguage`, `ContentLength` | `ContentMD5` | `ContentType` | `Expires`
-
-Headers to set to each file uploaded to S3. Note that ContentLenghth is automatically computed for you and ContentType is guessed using the `mime` package.
-
-```javascript
-var options = { headers: {'CacheControl': 'max-age=315360000, no-transform, public'} };
-gulp.src('./dist/**', {read: false})
-    .pipe(s3(aws, options));
-```
-
-#### options.acl
-
-Type: `String`  
-Default: `public-read`  
-Options: `private` | `public-read` | `public-read-write` | `authenticated-read` | `aws-exec-read` | `bucket-owner-read` | `bucket-owner-full-control`
-
-Set the access control for each object uploaded. Defaults to `public-read`.
-
-```javascript
-var options = { acl: 'private' };
-gulp.src('./dist/**', {read: false})
-    .pipe(s3(aws, options));
-```
-
-#### options.gzippedOnly
-
-Type: `Boolean`  
-Default: `false`
-
-Only upload files with .gz extension, additionally it will remove the .gz suffix on destination filename and set appropriate Content-Type and Content-Encoding headers.
-
-```javascript
-var gzip = require("gulp-gzip");
-...
-var options = { gzippedOnly: true };
-gulp.src('./dist/**')
-    .pipe(gzip())
-    .pipe(s3(aws, options));
-});
-```
-
-#### options.concurrency
-
-Type: `Number`  
-Default: `1`
-
-Change the concurrency at which the upload occurs, useful for projects with many files. Defaults to 1.
-
-```javascript
-var options = { concurrency: 5 };
-gulp.src('./dist/**')
-    .pipe(s3(aws, options));
+    .pipe(clean(client, cleanOpts));
 });
 ```
 
