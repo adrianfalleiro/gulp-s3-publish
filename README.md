@@ -3,9 +3,9 @@
 > s3 plugin for [gulp](https://github.com/gulpjs/gulp)
 
 ## Info
-This plugin is a fork of [gulp-s3](https://github.com/nkostelnik/gulp-s3), which was unmaintained when this repository was forked.
+This plugin started as a fork of [gulp-s3](https://github.com/nkostelnik/gulp-s3).
 
-This plugin adds support for AWS Signature V4 (which is mandatory for the newer regions), produces Streams2/3 compatible streams and will also error on upload failure, which can be useful in CI/CD environments
+Recently updated for Gulp 4 and added support for cleaning orphan files from an S3 bucket. Plugin API has changed since the 2.x release.
 
 Please open an issue for feature requests.
 
