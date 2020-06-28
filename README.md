@@ -23,25 +23,36 @@ const { upload, clean } = require('gulp-s3-publish');
 const { S3 } = require('aws-sdk'); 
 
 const client = S3();
+
 const uploadOpts = {
-  bucket: 'my-s3-bucket';
+  bucket: 'my-s3-bucket',
+  // uploadPath: '/s3/upload/path',
+  // delay: 0,
+  // maxConcurrency: 1,
+  putObjectParams: {
+    ACL: 'public-read'
+  },
+  // dryRun: false,
 };
 
 const cleanOpts = {
-  bucket: 'my-s3-bucket';
+  bucket: 'my-s3-bucket',
+  // uploadPath: '/s3/upload/path'
+  // whitelist: [
+  //   { type: 'key', path: 'keep-this-file.txt' },
+  //   { type: 'keyPrefix', path: 'keep-this-path' },
+  // ],
+  // dryRun: false,
 };
 
 // Upload files to S3
+// and clean orphaned files
 gulp.task('deploy', () => {
-  return gulp.src('./dist/**/*'
-    .pipe(upload(client, uploadOpts));
+  return gulp.src('./dist/**/*')
+    .pipe(upload(client, uploadOpts))
+    .pipe(clean(client, cleanOpts))
 });
 
-// Clean unused files in bucket
-gulp.task('clean', () => {
-  return gulp.src('./dist/**/*')
-    .pipe(clean(client, cleanOpts));
-});
 ```
 
 ## License

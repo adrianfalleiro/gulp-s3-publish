@@ -14,13 +14,13 @@ export interface UploadOpts {
   uploadPath?: string;
   delay?: number;
   maxConcurrency?: number;
-  extraS3PutObjectParams?: Partial<S3.PutObjectRequest>;
+  putObjectParams?: Partial<S3.PutObjectRequest>;
   dryRun?: boolean;
 }
 
 const defaults: Partial<UploadOpts> = {
   uploadPath: '',
-  extraS3PutObjectParams: {},
+  putObjectParams: {},
   dryRun: false,
 };
 
@@ -40,7 +40,7 @@ export function upload(client: S3, userOptions: UploadOpts) {
       .replace(file.base, options.uploadPath || '')
       .replace(new RegExp('\\\\', 'g'), '/');
 
-    const uploadParams: Partial<S3.Types.PutObjectRequest> = options.extraS3PutObjectParams;
+    const uploadParams: Partial<S3.Types.PutObjectRequest> = options.putObjectParams;
     uploadParams.Bucket = options.bucket;
     uploadParams.ContentType = getType(file.path) || defaultMimeType;
     uploadParams.Key = uploadPath;

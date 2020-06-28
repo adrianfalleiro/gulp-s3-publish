@@ -1,6 +1,6 @@
 // @ts-check
 const gulp = require('gulp');
-const { upload } = require('../dist');
+const { upload } = require('../../dist');
 const { S3 } = require('mock-aws-s3');
 const fs = require('fs');
 const mock = require('mock-fs');

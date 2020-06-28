@@ -1,5 +1,5 @@
 const gulp = require('gulp');
-const { clean } = require('../dist');
+const { clean, upload } = require('../../dist');
 const { S3 } = require('mock-aws-s3');
 const fs = require('fs');
 const mock = require('mock-fs');
@@ -9,10 +9,15 @@ const noop = () => {};
 
 const client = new S3();
 
+const uploadOpts = {
+  bucket: 'test-bucket',
+  uploadPath: 'test-path',
+};
+
 const cleanOpts = {
   bucket: 'test-bucket',
   uploadPath: 'test-path',
-}
+};
 
 const cleanOptsWithWhitelist = {
   bucket: 'test-bucket',
@@ -21,9 +26,9 @@ const cleanOptsWithWhitelist = {
     { type: 'keyPrefix', path: 'existing-dir' },
     { type: 'key', path: 'existing-test-file-4.txt' }
   ]
-}
+};
 
-describe('gulp-s3-publish/clean', () => {
+describe('gulp-s3-publish', () => {
 
   beforeEach(() => {
     // mock filesystem
@@ -37,8 +42,6 @@ describe('gulp-s3-publish/clean', () => {
           },
           'existing-test-file-4.txt': 'Existing test file 4',
           'existing-test-file-5.txt': 'Existing test file 5',
-          's3-copied-file-1.txt': 'S3 copied file 1',
-          's3-copied-file-2.txt': 'S3 copied file 2',
         }
       },
       'test-src-files': {
@@ -52,11 +55,11 @@ describe('gulp-s3-publish/clean', () => {
     mock.restore();
   });
 
-  it('should successfully clean non-uploaded files', done => {
-    const files = []
+  it('should successfully upload and clean non-uploaded files', done => {
     gulp.src('./test-src-files/*.txt')
+      .pipe(upload(client, uploadOpts))
       .pipe(clean(client, cleanOpts))
-      .on('data', file => files.push(file))
+      .on('data', noop)
       .on('error', err => done(new Error(err.message)))
       .on('end', () => {
         // Expect files to be deleted
@@ -73,11 +76,11 @@ describe('gulp-s3-publish/clean', () => {
       });
   });
 
-  it('should successfully clean non-uploaded and non-whitelisted files', done => {
-    const files = []
+  it('should successfully upload and clean non-uploaded and non-whitelisted files', done => {
     gulp.src('./test-src-files/*.txt')
+      .pipe(upload(client, uploadOpts))
       .pipe(clean(client, cleanOptsWithWhitelist))
-      .on('data', file => files.push(file))
+      .on('data', noop)
       .on('error', err => done(new Error(err.message)))
       .on('end', () => {
         // Expect files to be deleted
@@ -93,4 +96,5 @@ describe('gulp-s3-publish/clean', () => {
         done();
       });
   });
+
 });
