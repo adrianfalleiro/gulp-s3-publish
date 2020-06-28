@@ -26,7 +26,7 @@ const client = S3();
 
 const uploadOpts = {
   bucket: 'my-s3-bucket',
-  // uploadPath: '/s3/upload/path',
+  // uploadPath: 's3/upload/path',
   // delay: 0,
   // maxConcurrency: 1,
   putObjectParams: {
@@ -37,7 +37,7 @@ const uploadOpts = {
 
 const cleanOpts = {
   bucket: 'my-s3-bucket',
-  // uploadPath: '/s3/upload/path'
+  // uploadPath: 's3/upload/path'
   // whitelist: [
   //   { type: 'key', path: 'keep-this-file.txt' },
   //   { type: 'keyPrefix', path: 'keep-this-path' },
