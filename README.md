@@ -22,7 +22,7 @@ Then, use it in your `Gulpfile.js`:
 const { upload, clean } = require('gulp-s3-publish');
 const { S3 } = require('aws-sdk'); 
 
-const client = S3();
+const client = new S3();
 
 const uploadOpts = {
   bucket: 'my-s3-bucket',
