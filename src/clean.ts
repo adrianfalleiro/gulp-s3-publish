@@ -6,6 +6,8 @@ import * as log from 'fancy-log';
 import { S3 } from 'aws-sdk'
 import { chunk } from 'lodash';
 
+import { getUploadPath } from "./utils";
+
 const PLUGIN_NAME = 'gulp-s3-publish/clean';
 
 export interface CleanOpts {
@@ -40,10 +42,7 @@ export function clean(client: S3, userOptions: CleanOpts) {
       this.emit('error', new PluginError(PLUGIN_NAME, 'Streams not supported!'));
     }
 
-    const uploadPath = file.path
-      .replace(file.base, options.uploadPath || '')
-      .replace(new RegExp('\\\\', 'g'), '/');
-  
+    const uploadPath = getUploadPath(file, options.uploadPath || '');
     files.push(uploadPath);
     return callback();
   }

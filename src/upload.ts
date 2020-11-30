@@ -6,6 +6,8 @@ import * as log from 'fancy-log';
 import { S3 } from 'aws-sdk'
 import { TransformFunction } from 'through2';
 
+import { getUploadPath } from "./utils";
+
 const defaultMimeType = 'text/plain'; // eslint-disable-line
 const PLUGIN_NAME = 'gulp-s3-publish/upload';
 
@@ -36,10 +38,7 @@ export function upload(client: S3, userOptions: UploadOpts) {
       return callback(new PluginError(PLUGIN_NAME, 'Streams not supported!'));
     }
 
-    const uploadPath = file.path
-      .replace(file.base, options.uploadPath || '')
-      .replace(new RegExp('\\\\', 'g'), '/');
-
+    const uploadPath = getUploadPath(file, options.uploadPath || '');
     const uploadParams: Partial<S3.Types.PutObjectRequest> = options.putObjectParams;
     uploadParams.Bucket = options.bucket;
     uploadParams.ContentType = getType(file.path) || defaultMimeType;
